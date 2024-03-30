@@ -31,6 +31,7 @@ class CSP(object):
 
 
 
+
 def Solver(object):
 
     def __init__(self, *args, **kwargs):
@@ -38,31 +39,37 @@ def Solver(object):
         self.variable_heuristic = kwargs['variable_heuristic']
         self.AC_3 = kwargs['AC_3']
 
+        self.csp = kwargs['csp']
+
+
+    def backtrack_solvers(self):
+        pass
+    
     def AC_3(self):
         def arc_reduce(x, y, consistent):
             new_domain = []
-            for i in self.variables[x]:
+            for i in self.csp.variables[x]:
                 flag = False
-                for j in self.variables[y]:
+                for j in self.csp.variables[y]:
                     if consistent(i, j):
                         flag = True
                         break
                 if flag:
                     new_domain.append(i)
-            if len(new_domain) != len(self.variables[x]):
-                self.variables[x] = new_domain
+            if len(new_domain) != len(self.csp.variables[x]):
+                self.csp.variables[x] = new_domain
                 return True
             return False
 
-        queue = deque(constraint for constraint in self.constraints)
+        queue = deque(constraint for constraint in self.csp.constraints)
 
         while queue:
             constraint_func, x, y = queue.popleft()
             if arc_reduce(x, y, constraint_func):
-                if len(self.variables[x]) == 0:
+                if len(self.csp.variables[x]) == 0:
                     return False
                 else:
-                    for func, z in self.var_constraints[x]:
+                    for func, z in self.csp.var_constraints[x]:
                         if z != y:
                             queue.append((func, z, x))
 
@@ -70,9 +77,6 @@ def Solver(object):
     
     def MRV():
         pass
-    
-    def LCV():
-        pass
 
-    def backtrack_solvers(self):
+    def LCV():
         pass
