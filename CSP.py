@@ -28,8 +28,6 @@ class CSP(object):
     def add_variable(self, variable, domain):
         self.variables[variable] = domain
 
-    def backtrack_solvers(self):
-        pass
 
 
 
@@ -72,5 +70,9 @@ def Solver(object):
     
     def MRV():
         pass
+    
     def LCV():
+        pass
+
+    def backtrack_solvers(self):
         pass
