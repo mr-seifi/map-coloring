@@ -61,13 +61,8 @@ class Solver(object):
         """
         if self.variable_heuristic:
             return self.MRV()
-        else:
-            for variable in self.csp.variables:
-                if not self.csp.is_assigned(variable):
-                    return variable
+        return self.csp.unassigned_var[0]
 
-        return None
-    
     def ordered_domain_value(self, variable: str) -> List[str]:
         """
         Returns a list of domain values for the given variable in a specific order.
@@ -136,7 +131,7 @@ class Solver(object):
         min_values = float('inf')
         selected_variable = None
 
-        for variable in self.csp.variables:
+        for variable in self.csp.unassigned_var:
             if len(self.csp.variables[variable]) < min_values:
                 min_values = len(self.csp.variables[variable])
                 selected_variable = variable
