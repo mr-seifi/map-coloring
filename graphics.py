@@ -83,7 +83,7 @@ def draw_colored_map(solution, gdf, continent, xlim=None, ylim=None):
     for idx, row in selected_continent.iterrows():
         if row['iso_a3'] in solution:
             plt.text(row.geometry.centroid.x, row.geometry.centroid.y, row['iso_a3'], fontsize=6, ha='center', va='center')
-
+    # plt.text(-5, 60, 'Assignment Number = ', fontsize = 22)
     plt.show()
 
 
@@ -105,7 +105,7 @@ def main():
 
     colors = ['red', 'green', 'blue', 'yellow']
     solution = color_map(borders, colors)
-    print(solution)
+    # print(solution)
 
     draw_colored_map(solution, gdf, continent)  ## For Europe use following args too: "xlim=(-40, 100), ylim=(35, 80)"
 

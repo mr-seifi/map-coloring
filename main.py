@@ -51,7 +51,7 @@ def main():
 
     args = parser.parse_args()
     borders = generate_borders_by_continent(continent=str(args.map))
-    print(borders)
+    # print(borders)
     csp = CSP()
     for country, neighbors in borders.items():
         csp.add_variable(country, ['red', 'green', 'blue', 'yellow'])
@@ -72,7 +72,7 @@ def main():
                     variable_heuristics=args.mrv, 
                     AC_3=args.arc_consistency)
     result = solver.backtrack_solver()
-    print(result)
+    print("Assignment Number :",solver.csp.assignments_number)
 
     draw(solution=result, continent=str(args.map))
     

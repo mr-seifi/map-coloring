@@ -37,6 +37,7 @@ class CSP(object):
         self.unassigned_var = []
         self.var_constraints = {}
         self.assignments = {}
+        self.assignments_number = 0
 
     def add_constraint(self, constraint_func, variables):
         """
@@ -88,6 +89,7 @@ class CSP(object):
         self.variables[variable] = [value]
         self.assignments[variable] = value
         self.unassigned_var.remove(variable)
+        self.assignments_number += 1
 
     def is_consistent(self, variable, value):
             """
