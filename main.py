@@ -11,7 +11,6 @@ class Continent(Enum):
     africa = "Africa"
     america = "America"
     europe = "Europe"
-    ocenia = "Ocenia"
 
     def __str__(self):
         return self.value
@@ -28,7 +27,7 @@ def main():
         "--map",
         type=Continent,
         choices=list(Continent),
-        help="Map must be: [Asia, Africa, America, Europe, Ocenia]",
+        help="Map must be: [Asia, Africa, America, Europe]",
     )
     parser.add_argument(
         "-lcv",
@@ -64,15 +63,18 @@ def main():
     # print("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ variables $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     # csp.add_variable('A', ['red', 'green', 'blue'])
     # csp.add_variable('B', ['red', 'green'])
-    # csp.add_variable('C', ['red', 'blue'])
+    # csp.add_variable('C', ['red', 'green', 'blue'])
     # csp.add_constraint(lambda a, b: a != b, ['A', 'B'])
     # csp.add_constraint(lambda a, c: a != c, ['A', 'C'])
+    # csp.add_constraint(lambda b, c: b != c, ['B', 'C'])
+
 
     solver = Solver(csp, domain_heuristics=args.lcv, 
                     variable_heuristics=args.mrv, 
                     AC_3=args.arc_consistency)
     result = solver.backtrack_solver()
     print("Assignment Number :",solver.csp.assignments_number)
+    print("solution :",solver.csp.assignments)
 
     draw(solution=result, continent=str(args.map))
     
