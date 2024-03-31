@@ -74,7 +74,7 @@ def main():
     result = solver.backtrack_solver()
     print("Assignment Number :",solver.csp.assignments_number)
 
-    draw(solution=result, continent=str(args.map))
+    draw(solution=result, continent=str(args.map), assignments_number=solver.csp.assignments_number)
     
 
 if __name__ == '__main__':
