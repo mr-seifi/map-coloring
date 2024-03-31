@@ -87,6 +87,14 @@ def draw_colored_map(solution, gdf, continent, xlim=None, ylim=None):
     plt.show()
 
 
+def draw(continent, solution):
+    neighbors_df = pd.read_csv('./countries_dataset.csv')
+    neighbors_df['geometry'] = neighbors_df['geometry'].apply(wkt.loads)
+    gdf = gpd.GeoDataFrame(neighbors_df, geometry='geometry')
+
+    draw_colored_map(solution, gdf, continent)
+
+
 def main():
     neighbors_df = pd.read_csv('./countries_dataset.csv')
     neighbors_df['geometry'] = neighbors_df['geometry'].apply(wkt.loads)
@@ -94,7 +102,6 @@ def main():
 
     continent = 'Asia'
     borders = generate_borders_by_continent(neighbors_df, continent)
-    print(borders)
 
     colors = ['red', 'green', 'blue', 'yellow']
     solution = color_map(borders, colors)

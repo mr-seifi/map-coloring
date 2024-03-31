@@ -92,6 +92,8 @@ class Solver(object):
         Returns:
         - The reduced domain of variable x if the domain is reduced, None otherwise.
         """
+        if y not in self.csp.variables or x not in self.csp.variables:
+            return None
         new_domain = [i for i in self.csp.variables[x] if any(consistent(i, j) for j in self.csp.variables[y])]
         if len(new_domain) != len(self.csp.variables[x]):
             return new_domain
@@ -154,7 +156,7 @@ class Solver(object):
         for value in values:
             count = 0
             for constraint_func, other_variable in self.csp.var_constraints[variable]:
-                if value in self.csp.variables[other_variable]:
+                if other_variable in self.csp.variables and value in self.csp.variables[other_variable]:
                     count += 1
             constraints_count.append((value, count))
 
