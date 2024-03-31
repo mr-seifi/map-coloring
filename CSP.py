@@ -130,7 +130,7 @@ class CSP(object):
 
     def unassign(self, removed_values_from_domain, variable):
         """
-        Unassigns a variable and restores its domain values.
+        Unassign a variable and restores its domain values.
 
         Args:
             removed_values_from_domain (list): A list of domain values to be restored.
