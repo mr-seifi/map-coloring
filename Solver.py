@@ -21,10 +21,74 @@ def Solver(object):
         self.csp = csp
         self.queue = deque(constraint for constraint in csp.constraints)
 
-    def backtrack_solvers(self):
-        pass
 
-    def arc_reduce(self, x, y, consistent) -> bool:
+    def backtrack_solver(self) -> List[Tuple[str, str]]:
+        """
+        Backtracking algorithm to solve the constraint satisfaction problem (CSP).
+
+        Returns:
+            List[Tuple[str, str]]: A list of variable-value assignments that satisfy all constraints.
+        """
+        if not self.csp.variables[variable]:
+            return None
+
+        if self.csp.is_complete():
+            return self.csp.assignments
+
+        variable = self.select_unassigned_variable()
+
+        for value in self.ordered_domain_value(variable):
+            if self.csp.is_consistent(variable, value):
+                removed_values_from_domain = []
+                for other_value in self.csp.variables[variable]:
+                    if other_value != value:
+                        removed_values_from_domain.append((variable, other_value))
+              
+                self.csp.assign(variable, value)
+                
+                if self.AC_3 is True:
+                    removed_values_from_domain.extend(self.apply_AC3())
+                result = self.backtrack_solver()
+                if result is not None:
+                    return result
+                self.csp.unassign(removed_values_from_domain, variable)
+
+        return None
+
+    def select_unassigned_variable(self) -> str:
+        """
+        Selects an unassigned variable using the MRV heuristic.
+
+        Returns:
+            str: The selected unassigned variable.
+        """
+        if self.variable_heuristic:
+            return self.MRV()
+        else:
+            for variable in self.csp.variables:
+                if not self.csp.is_assigned(variable):
+                    return variable
+
+        return None
+    
+    def ordered_domain_value(self, variable: str) -> List[str]:
+        """
+        Returns a list of domain values for the given variable in a specific order.
+
+        Args:
+            variable (str): The name of the variable.
+
+        Returns:
+            List[str]: A list of domain values for the variable in a specific order.
+        """
+        # Function implementation goes here
+        if self.domain_heuristic:
+            return self.LCV(variable)
+        return self.csp.variables[variable]
+
+        
+
+    def arc_reduce(self, x, y, consistent) -> List[str]:
         """
         Reduce the domain of variable x based on the constraints between x and y.
 
@@ -34,42 +98,36 @@ def Solver(object):
         - consistent: A function that checks the consistency between two values.
 
         Returns:
-        - True if the domain of variable x is reduced, False otherwise.
+        - The reduced domain of variable x if the domain is reduced, None otherwise.
         """
-        new_domain = []
-        for i in self.csp.variables[x]:
-            flag = False
-            for j in self.csp.variables[y]:
-                if consistent(i, j):
-                    flag = True
-                    break
-            if flag:
-                new_domain.append(i)
+        new_domain = [i for i in self.csp.variables[x] if any(consistent(i, j) for j in self.csp.variables[y])]
         if len(new_domain) != len(self.csp.variables[x]):
-            self.csp.variables[x] = new_domain
-            return True
-        return False
+            return new_domain
+        return None
 
-    def AC3(self) -> bool:
+    def apply_AC3(self) -> List[Tuple[str, str]]:
         """
-        Applies the Arc Consistency 3 (AC3) algorithm to the constraint satisfaction problem (CSP).
+        Applies the AC3 algorithm to reduce the domains of variables in the CSP.
 
         Returns:
-            bool: True if the CSP is solvable, False otherwise.
+            A list of tuples representing the removed values from the domain of variables.
         """
         queue = deque(constraint for constraint in self.csp.constraints)
-
+        removed_values_from_domain = []
         while queue:
             constraint_func, x, y = queue.popleft()
-            if self.arc_reduce(x, y, constraint_func):
-                if len(self.csp.variables[x]) == 0:
-                    return False
+            new_domain = self.arc_reduce(x, y, constraint_func)
+            if new_domain is not None:
+                removed_values_from_domain.extend((x, j) for j in self.csp.variables[x] if j not in new_domain)
+                self.csp.variables[x] = new_domain
+                if len(new_domain) == 0:
+                    return None
                 else:
                     for func, z in self.csp.var_constraints[x]:
                         if z != y:
                             queue.append((func, z, x))
 
-        return True
+        return removed_values_from_domain
 
     def MRV(self) -> str:
         """
@@ -88,7 +146,7 @@ def Solver(object):
 
         return selected_variable
 
-    def LCV(self, variable: str) -> List[Tuple[str, int]]:
+    def LCV(self, variable: str) -> List[str]:
         """
         Orders the values of a variable based on the Least Constraining Value (LCV) heuristic.
 
@@ -96,18 +154,18 @@ def Solver(object):
             variable (str): The variable for which to order the values.
 
         Returns:
-            List[Tuple[str, int]]: A list of tuples containing the value and the number of constraints it imposes.
+            List[str]: A list of values sorted based on the number of constraints they impose.
         """
         values = self.csp.variables[variable]
         constraints_count = []
 
         for value in values:
             count = 0
-            for constraint in self.csp.constraints:
-                if variable in constraint[1] and value in self.csp.variables[constraint[2]]:
+            for constraint_func, other_variable in self.csp.var_constraints[variable]:
+                if value in self.csp.variables[other_variable]:
                     count += 1
             constraints_count.append((value, count))
 
         constraints_count.sort(key=lambda x: x[1])
 
-        return constraints_count
+        return [value for value, _ in constraints_count]
