@@ -124,7 +124,7 @@ class CSP(object):
         Returns:
             bool: True if the variable has been assigned, False otherwise.
         """
-        return variable not in self.unassigned_var
+        return self.assignments[variable] != None
 
     def unassign(self, removed_values_from_domain, variable):
         """
