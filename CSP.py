@@ -17,7 +17,7 @@ class CSP(object):
         add_variable(variable, domain): Adds a variable to the CSP with its domain.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         Initializes a Constraint Satisfaction Problem (CSP) object.
 
@@ -39,7 +39,7 @@ class CSP(object):
         self.assignments = {}
         self.assignments_number = 0
 
-    def add_constraint(self, constraint_func, variables):
+    def add_constraint(self, constraint_func: Callable, variables: List[str]) -> None:
         """
         Adds a constraint to the CSP.
 
@@ -58,7 +58,7 @@ class CSP(object):
             self.var_constraints[variable].append(
                 (constraint_func, variables[0] if variable == variables[1] else variables[1]))
 
-    def add_variable(self, variable, domain):
+    def add_variable(self, variable: str, domain: List) -> None:
         """
         Adds a variable to the CSP with its domain.
 
@@ -74,7 +74,7 @@ class CSP(object):
         self.assignments[variable] = None
         self.var_constraints[variable] = []
 
-    def assign(self, variable, value):
+    def assign(self, variable: str, value) -> bool:
         """
         Assigns a value to a variable in the CSP.
 
@@ -90,24 +90,25 @@ class CSP(object):
         self.assignments[variable] = value
         self.unassigned_var.remove(variable)
         self.assignments_number += 1
+        return True
 
-    def is_consistent(self, variable, value):
-            """
-            Checks if assigning a value to a variable violates any constraints.
+    def is_consistent(self, variable: str, value) -> bool:
+        """
+        Checks if assigning a value to a variable violates any constraints.
 
-            Args:
-                variable (str): The variable to be assigned.
-                value: The value to be assigned to the variable.
+        Args:
+            variable (str): The variable to be assigned.
+            value: The value to be assigned to the variable.
 
-            Returns:
-                bool: True if the assignment is consistent with the constraints, False otherwise.
-            """
-            for constraint_func, var2 in self.var_constraints[variable]:
-                if var2 in self.variables and not any(constraint_func(value, j) for j in self.variables[var2]):
-                    return False
-            return True
+        Returns:
+            bool: True if the assignment is consistent with the constraints, False otherwise.
+        """
+        for constraint_func, var2 in self.var_constraints[variable]:
+            if var2 in self.variables and not any(constraint_func(value, j) for j in self.variables[var2]):
+                return False
+        return True
     
-    def is_complete(self):
+    def is_complete(self) -> bool:
         """
         Checks if the CSP is complete, i.e., all variables have been assigned.
 
@@ -116,7 +117,7 @@ class CSP(object):
         """
         return len(self.unassigned_var) == 0
     
-    def is_assigned(self, variable):
+    def is_assigned(self, variable: str) -> bool:
         """
         Checks if a variable has been assigned a value.
 
@@ -126,11 +127,11 @@ class CSP(object):
         Returns:
             bool: True if the variable has been assigned, False otherwise.
         """
-        return self.assignments[variable] != None
+        return self.assignments[variable] is not None
 
-    def unassign(self, removed_values_from_domain, variable):
+    def unassign(self, removed_values_from_domain: List[Tuple[str, any]], variable: str) -> None:
         """
-        Unassigns a variable and restores its domain values.
+        Unassign a variable and restores its domain values.
 
         Args:
             removed_values_from_domain (list): A list of domain values to be restored.
