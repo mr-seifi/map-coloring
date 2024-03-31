@@ -3,7 +3,7 @@ from typing import Callable, List, Tuple
 from CSP import CSP
 
 
-def Solver(object):
+class Solver(object):
 
     def __init__(self, csp: CSP, domain_heuristics: bool = False, variable_heuristics: bool = False, AC_3: bool = False) -> None:
         """
@@ -19,7 +19,6 @@ def Solver(object):
         self.variable_heuristic = variable_heuristics
         self.AC_3 = AC_3
         self.csp = csp
-        self.queue = deque(constraint for constraint in csp.constraints)
 
 
     def backtrack_solver(self) -> List[Tuple[str, str]]:
@@ -29,8 +28,6 @@ def Solver(object):
         Returns:
             List[Tuple[str, str]]: A list of variable-value assignments that satisfy all constraints.
         """
-        if not self.csp.variables[variable]:
-            return None
 
         if self.csp.is_complete():
             return self.csp.assignments

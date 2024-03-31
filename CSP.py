@@ -71,6 +71,7 @@ class CSP(object):
         self.unassigned_var.append(variable)
         self.variables[variable] = domain
         self.assignments[variable] = None
+        self.var_constraints[variable] = []
 
     def assign(self, variable, value):
         """
@@ -123,7 +124,7 @@ class CSP(object):
         Returns:
             bool: True if the variable has been assigned, False otherwise.
         """
-        return variable not in self.unassigned_variables
+        return variable not in self.unassigned_var
 
     def unassign(self, removed_values_from_domain, variable):
         """
