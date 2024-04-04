@@ -44,7 +44,9 @@ class Solver(object):
                 self.csp.assign(variable, value)
                 
                 if self.AC_3 is True:
-                    removed_values_from_domain.extend(self.apply_AC3())
+                    if self.apply_AC3() is not None:
+                        removed_values_from_domain.extend(self.apply_AC3())
+                
                 result = self.backtrack_solver()
                 if result is not None:
                     return result

@@ -4,7 +4,7 @@ from CSP import CSP
 from Solver import Solver
 from map_generator import generate_borders_by_continent
 from graphics import draw
-
+import random
 
 class Continent(Enum):
     asia = "Asia"
@@ -47,15 +47,41 @@ def main():
         action="store_true",
         help="Enable arc consistency as a mechanism to eliminate the domain of variables achieving an optimized solution"
     )
-
+    parser.add_argument(
+        "-ND",
+        "--Neighbourhood-distance",
+        type=int,
+        default=1,
+        help="The value determines the threshold for neighboring regions' similarity in color, with a default of 1 ensuring adjacent regions have distinct colors; increasing it, for instance to 2, extends this dissimilarity to the neighbors of neighbors."
+    )
     args = parser.parse_args()
-    borders = generate_borders_by_continent(continent=str(args.map))
+    borders = generate_borders_by_continent(continent=str(args.map), neighbor_threshold=args.Neighbourhood_distance)
     # print(borders)
-    csp = CSP()
-    for country, neighbors in borders.items():
-        csp.add_variable(country, ['red', 'green', 'blue', 'yellow'])
-        for neighbor in neighbors:
-            csp.add_constraint(lambda a, b: a != b, [country, neighbor])
+    random.seed(10)
+    def generate_color():
+        r = random.random()
+        g = random.random()
+        b = random.random()
+        return (r, g, b)
+
+    colors = [generate_color() for _ in range(100)]
+    result = None
+    colors_count = 4
+    while(result==None):
+        print(f'Algorithm starts with {colors_count} colors')
+        color_list = colors[:colors_count]
+        csp = CSP()
+        for country, neighbors in borders.items():
+            csp.add_variable(country, color_list)
+            for neighbor in neighbors:
+                csp.add_constraint(lambda a, b: a != b, [country, neighbor])
+
+        solver = Solver(csp, domain_heuristics=args.lcv, 
+                        variable_heuristics=args.mrv, 
+                        AC_3=args.arc_consistency)
+        result = solver.backtrack_solver()
+        colors_count += 1
+
 
     # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ constraints $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     # print(csp.constraints)
@@ -69,10 +95,10 @@ def main():
     # csp.add_constraint(lambda b, c: b != c, ['B', 'C'])
 
 
-    solver = Solver(csp, domain_heuristics=args.lcv, 
-                    variable_heuristics=args.mrv, 
-                    AC_3=args.arc_consistency)
-    result = solver.backtrack_solver()
+    # solver = Solver(csp, domain_heuristics=args.lcv, 
+    #                 variable_heuristics=args.mrv, 
+    #                 AC_3=args.arc_consistency)
+    # result = solver.backtrack_solver()
     print("Assignment Number :",solver.csp.assignments_number)
     print("solution :",solver.csp.assignments)
 
