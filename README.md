@@ -38,3 +38,5 @@ To run the code, execute main.py with the specified command format:
 * python main.py -m Europe -lcv -mrv -ac3 -ND 2
 
 ## Examples of colored maps with the neighborhood distance set to 2
+![Europe](https://github.com/mr-seifi/map-coloring/blob/0a2f2b93d98a8c4ae9dc2202f006f3b333de64c4/Colored_map_images/Europe_ND2.png)
+![Asia](https://github.com/mr-seifi/map-coloring/blob/0a2f2b93d98a8c4ae9dc2202f006f3b333de64c4/Colored_map_images/Asia_ND2.png)
